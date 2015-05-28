@@ -7,9 +7,11 @@ health check with port plugin for fluentd
 <source>
   type ping_port
   tag ping_port.exsample
-  host web01
-  port 80
-  interval 10s
+  host forwarder-host
+  port 24224
+  timeout 10
+  interval 1s
+  retry_count 2
 </source>
 
 <match ping_port.exsample>
@@ -19,7 +21,7 @@ health check with port plugin for fluentd
 
 #### output
 ```
-2015-05-13 16:24:05 +0900 ping_port.exsample: {"message":"feweb01:90 Connect Error."}
+2015-05-13 16:24:05 +0900 ping_port.exsample: {"message":"forwarder-host:24224 Connect Error."}
 ```
 
 ## parameter
