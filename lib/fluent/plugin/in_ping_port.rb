@@ -6,6 +6,7 @@ module Fluent
     config_param :host, :string
     config_param :port, :string
     config_param :timeout, :integer, default: 1
+    config_param :retry_count, :integer, default: 3
     config_param :interval, :time, default: '5m'
 
     def configure(conf)
@@ -17,6 +18,10 @@ module Fluent
     def start
       @ports = @port.split(',')
       @thread = Thread.new(&method(:run))
+      @state = @ports.inject({}) {|state, port|
+        state[port] = 0
+        state
+      }
     end
 
     def shutdown
@@ -34,10 +39,14 @@ module Fluent
       begin
         @ports.each do |port|
           unless is_port_open?(@host, port, @timeout)
-            record = {
-              'message' => "#{@host}:#{port} Connect Error." 
-            }
-            Fluent::Engine.emit @tag, Fluent::Engine.now, record
+            @state[port] = @state[port] + 1
+            if @state[port] >= @retry_count
+              record = {
+                'message' => "#{@host}:#{port} Connect Error."
+              }
+              Fluent::Engine.emit @tag, Fluent::Engine.now, record
+              @state[port] = 0
+            end
           end
         end
       rescue => e
