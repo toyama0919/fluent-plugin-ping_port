@@ -3,8 +3,8 @@
 Gem::Specification.new do |gem|
   gem.name          = "fluent-plugin-ping_port"
   gem.version       = "0.0.1"
-  gem.summary       = %q{PingPort plugin for fluentd}
-  gem.description   = %q{PingPort plugin for fluentd}
+  gem.summary       = %q{health check with port plugin for fluentd.}
+  gem.description   = %q{health check with port plugin for fluentd.}
   gem.license       = "MIT"
   gem.authors       = ["Hiroshi Toyama"]
   gem.email         = "toyama0919@gmail.com"
