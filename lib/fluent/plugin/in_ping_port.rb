@@ -2,6 +2,12 @@ module Fluent
   class PingPortInput < Fluent::Input
     Plugin.register_input 'ping_port', self
 
+    def initialize
+      super
+      require 'socket'
+      require 'timeout'
+    end
+
     config_param :tag, :string
     config_param :host, :string
     config_param :port, :string
@@ -10,18 +16,16 @@ module Fluent
     config_param :interval, :time, default: '5m'
 
     def configure(conf)
-      require 'socket'
-      require 'timeout'
       super
-    end
-
-    def start
       @ports = @port.split(',')
-      @thread = Thread.new(&method(:run))
       @state = @ports.inject({}) {|state, port|
         state[port] = 0
         state
       }
+    end
+
+    def start
+      @thread = Thread.new(&method(:run))
     end
 
     def shutdown
