@@ -38,7 +38,7 @@ class PingPortInputTest < Test::Unit::TestCase
     end
   end
 
-  def test_emit
+  def test_emit_ng
     d = create_driver %q{
       tag ping_port.exsample
       host localhost
@@ -54,6 +54,23 @@ class PingPortInputTest < Test::Unit::TestCase
       assert_equal true, emits.length > 0
       assert_equal "ping_port.exsample", emits[0].first
       assert_equal ({"message"=>"localhost:9999 Connect Error."}), emits[0].last
+    end
+  end
+
+  def test_emit_ok
+    d = create_driver %q{
+      tag ping_port.exsample
+      host fluentd.org
+      port 80
+      timeout 10
+      interval 1s
+      retry_count 2
+    }
+
+    d.run do
+      sleep 3
+      emits = d.emits
+      assert_equal 0, emits.size
     end
   end
 end
