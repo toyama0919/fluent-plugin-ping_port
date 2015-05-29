@@ -51,6 +51,8 @@ module Fluent
               Fluent::Engine.emit @tag, Fluent::Engine.now, record
               @state[port] = 0
             end
+          else
+            @state[port] = 0
           end
         end
       rescue => e
