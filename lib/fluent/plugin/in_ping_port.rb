@@ -8,6 +8,10 @@ module Fluent
       require 'timeout'
     end
 
+    unless method_defined?(:router)
+      define_method("router") { Fluent::Engine }
+    end
+
     config_param :tag, :string
     config_param :host, :string
     config_param :port, :string
@@ -48,7 +52,7 @@ module Fluent
               record = {
                 'message' => "#{@host}:#{port} Connect Error."
               }
-              Fluent::Engine.emit @tag, Fluent::Engine.now, record
+              router.emit @tag, Fluent::Engine.now, record
               @state[port] = 0
             end
           else
